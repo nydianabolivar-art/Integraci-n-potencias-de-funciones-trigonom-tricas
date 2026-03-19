@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integración Trigonométrica — Ingeniería</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+:root {
+  --bg:       #070b12;
+  --bg2:      #0c1220;
+  --bg3:      #111827;
+  --surface:  #151f30;
+  --surface2: #1a2640;
+  --border:   rgba(99,179,255,0.12);
+  --border2:  rgba(99,179,255,0.22);
+  --text:     #e2eaf8;
+  --muted:    #7a90b0;
+  --dim:      #3d5070;
+
+  /* Carreras */
+  --multimedia: #f97316;
+  --industrial: #22c55e;
+  --datos:      #a78bfa;
+  --software:   #38bdf8;
+  --sistemas:   #f43f5e;
+
+  --accent: #63b3ff;
+  --gold:   #fbbf24;
+  --teal:   #2dd4bf;
+
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --serif: 'IBM Plex Serif', Georgia, serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.75;
+  overflow-x:hidden;
+}
+
+/* ─── SCANLINE OVERLAY ─── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  pointer-events:none;z-index:999;
+}
+
+/* ─── HERO ─── */
+.hero{
+  position:relative;
+  min-height:340px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:64px 32px 52px;
+  text-align:center;
+  overflow:hidden;
+  border-bottom:1px solid var(--border2);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(99,179,255,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,179,255,0.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+}
+.hero-glow{
+  position:absolute;
+  width:600px;height:300px;
+  top:0;left:50%;transform:translateX(-50%);
+  background:radial-gradient(ellipse,rgba(99,179,255,0.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:20px;
+  opacity:0;
+  animation:fadeUp .6s .1s forwards;
+}
+.hero h1{
+  font-family:var(--mono);
+  font-size:clamp(1.6rem,4vw,3rem);
+  font-weight:600;
+  color:#fff;
+  line-height:1.15;
+  margin-bottom:18px;
+  opacity:0;
+  animation:fadeUp .6s .2s forwards;
+}
+.hero h1 .hl{color:var(--accent);}
+.hero-sub{
+  font-size:15px;
+  color:var(--muted);
+  max-width:600px;
+  margin-bottom:28px;
+  opacity:0;
+  animation:fadeUp .6s .3s forwards;
+}
+.career-pills{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+  opacity:0;animation:fadeUp .6s .4s forwards;
+}
+.cpill{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:500;
+  padding:5px 14px;
+  border-radius:4px;
+  border:1px solid;
+  letter-spacing:.5px;
+}
+.cpill.mm{color:var(--multimedia);border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.06);}
+.cpill.ind{color:var(--industrial);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06);}
+.cpill.dat{color:var(--datos);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.06);}
+.cpill.sw{color:var(--software);border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.06);}
+.cpill.sis{color:var(--sistemas);border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.06);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ─── NAV ─── */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,11,18,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;
+  padding:0 24px;
+  overflow-x:auto;
+}
+.nav-btn{
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:.5px;
+  color:var(--dim);
+  padding:14px 18px;
+  background:none;border:none;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:color .2s, border-color .2s;
+}
+.nav-btn:hover{color:var(--muted);}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ─── LAYOUT ─── */
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+
+.sec{padding:60px 0 40px;border-bottom:1px solid var(--border);}
+.sec:last-child{border-bottom:none;}
+
+.sec-tag{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--accent);
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.sec-h{
+  font-family:var(--mono);
+  font-size:clamp(1.4rem,3vw,2rem);
+  font-weight:600;
+  color:#fff;
+  margin-bottom:10px;
+  line-height:1.25;
+}
+.sec-sub{
+  color:var(--muted);
+  font-size:15px;
+  max-width:700px;
+  margin-bottom:36px;
+}
+
+/* ─── CAREER CONTEXT TABS ─── */
+.ctx-tabs{
+  display:flex;gap:0;
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:4px;
+}
+.ctx-tab{
+  flex:1;
+  font-family:var(--mono);
+  font-size:11px;
+  padding:10px 6px;
+  background:var(--surface);
+  border:none;
+  color:var(--dim);
+  cursor:pointer;
+  transition:all .2s;
+  text-align:center;
+  border-right:1px solid var(--border);
+  letter-spacing:.3px;
+}
+.ctx-tab:last-child{border-right:none;}
+.ctx-tab:hover{color:var(--muted);background:var(--surface2);}
+.ctx-tab.active-mm{background:rgba(249,115,22,.12);color:var(--multimedia);}
+.ctx-tab.active-ind{background:rgba(34,197,94,.12);color:var(--industrial);}
+.ctx-tab.active-dat{background:rgba(167,139,250,.12);color:var(--datos);}
+.ctx-tab.active-sw{background:rgba(56,189,248,.12);color:var(--software);}
+.ctx-tab.active-sis{background:rgba(244,63,94,.12);color:var(--sistemas);}
+
+.ctx-panel{display:none;}
+.ctx-panel.visible{display:block;}
+
+.ctx-card{
+  border-radius:0 0 8px 8px;
+  padding:20px 24px;
+  border:1px solid var(--border);
+  border-top:none;
+  font-size:14.5px;
+  color:var(--text);
+}
+.ctx-card.mm{background:rgba(249,115,22,.05);border-color:rgba(249,115,22,.2);}
+.ctx-card.ind{background:rgba(34,197,94,.05);border-color:rgba(34,197,94,.2);}
+.ctx-card.dat{background:rgba(167,139,250,.05);border-color:rgba(167,139,250,.2);}
+.ctx-card.sw{background:rgba(56,189,248,.05);border-color:rgba(56,189,248,.2);}
+.ctx-card.sis{background:rgba(244,63,94,.05);border-color:rgba(244,63,94,.2);}
+
+.ctx-icon{font-size:28px;margin-bottom:10px;}
+.ctx-title{font-family:var(--mono);font-size:13px;font-weight:600;margin-bottom:6px;}
+.ctx-title.mm{color:var(--multimedia);}
+.ctx-title.ind{color:var(--industrial);}
+.ctx-title.dat{color:var(--datos);}
+.ctx-title.sw{color:var(--software);}
+.ctx-title.sis{color:var(--sistemas);}
+.ctx-body{color:var(--muted);font-size:14px;line-height:1.7;}
+
+/* ─── CARDS ─── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:22px 24px;
+  margin-bottom:18px;
+}
+.card-h{
+  font-family:var(--mono);
+  font-size:14px;
+  font-weight:600;
+  color:var(--accent);
+  margin-bottom:14px;
+  letter-spacing:.3px;
+}
+
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin:18px 0;}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0;}
+
+/* ─── CODE BLOCK (formula) ─── */
+.fbox{
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-left:3px solid var(--accent);
+  border-radius:6px;
+  padding:18px 22px;
+  margin:14px 0;
+  font-size:16px;
+  overflow-x:auto;
+}
+.fbox.gold{border-left-color:var(--gold);}
+.fbox.teal{border-left-color:var(--teal);}
+.fbox.mm{border-left-color:var(--multimedia);}
+.fbox.ind{border-left-color:var(--industrial);}
+.fbox.dat{border-left-color:var(--datos);}
+.fbox.sw{border-left-color:var(--software);}
+.fbox.sis{border-left-color:var(--sistemas);}
+
+/* ─── STEPS ─── */
+.steps{counter-reset:stp;}
+.step{display:flex;gap:16px;margin-bottom:20px;align-items:flex-start;}
+.sn{
+  counter-increment:stp;
+  min-width:32px;height:32px;
+  border-radius:4px;
+  background:var(--accent);
+  color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  flex-shrink:0;margin-top:2px;
+}
+.sn::before{content:counter(stp,'decimal-leading-zero');}
+.sc{flex:1;}
+.sl{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;letter-spacing:.3px;}
+.st{color:var(--muted);font-size:14.5px;}
+
+/* ─── TABLE ─── */
+.tw{overflow-x:auto;border-radius:8px;border:1px solid var(--border);margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{
+  background:var(--surface2);
+  color:var(--dim);
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  padding:12px 16px;text-align:left;
+  border-bottom:1px solid var(--border);
+}
+td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(99,179,255,.03);}
+td.cd{font-family:var(--mono);font-size:12px;color:var(--accent);}
+td.sm{color:var(--muted);font-size:13px;}
+
+/* ─── EXERCISE / ACCORDION ─── */
+.ex{
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:16px;
+  overflow:hidden;
+  transition:border-color .2s;
+}
+.ex:hover{border-color:var(--border2);}
+.ex-head{
+  padding:14px 20px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;user-select:none;
+  background:var(--surface);
+}
+.ex-head:hover{background:var(--surface2);}
+.ex-badge{
+  font-family:var(--mono);
+  font-size:10px;font-weight:600;
+  letter-spacing:1px;
+  padding:3px 10px;border-radius:3px;
+  text-transform:uppercase;white-space:nowrap;
+  flex-shrink:0;
+}
+.badge-base{background:rgba(99,179,255,.15);color:var(--accent);}
+.badge-int{background:rgba(251,191,36,.15);color:var(--gold);}
+.badge-adv{background:rgba(244,63,94,.15);color:var(--sistemas);}
+.badge-mm{background:rgba(249,115,22,.15);color:var(--multimedia);}
+.badge-ind{background:rgba(34,197,94,.15);color:var(--industrial);}
+.badge-dat{background:rgba(167,139,250,.15);color:var(--datos);}
+.badge-sw{background:rgba(56,189,248,.15);color:var(--software);}
+.badge-sis{background:rgba(244,63,94,.15);color:var(--sistemas);}
+
+.ex-title{flex:1;font-family:var(--mono);font-size:13px;color:var(--text);}
+.ex-arr{color:var(--dim);font-size:16px;transition:transform .3s;line-height:1;}
+.ex-body{padding:24px;display:none;border-top:1px solid var(--border);}
+.ex-body.open{display:block;}
+
+.ex-prob{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:16px 20px;
+  margin-bottom:16px;
+  font-size:15px;
+  border-left:3px solid var(--gold);
+}
+.sol-lbl{
+  font-family:var(--mono);
+  font-size:10px;letter-spacing:3px;
+  color:var(--teal);text-transform:uppercase;
+  margin:20px 0 12px;
+}
+
+/* Career insight box */
+.insight{
+  border-radius:6px;
+  padding:16px 20px;
+  margin-top:16px;
+  font-size:14px;
+}
+.insight.mm{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);}
+.insight.ind{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);}
+.insight.dat{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);}
+.insight.sw{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);}
+.insight.sis{background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.2);}
+.insight-row{display:flex;gap:10px;margin-bottom:6px;align-items:flex-start;}
+.insight-dot{width:20px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;}
+.insight-dot.mm{background:rgba(249,115,22,.2);color:var(--multimedia);}
+.insight-dot.ind{background:rgba(34,197,94,.2);color:var(--industrial);}
+.insight-dot.dat{background:rgba(167,139,250,.2);color:var(--datos);}
+.insight-dot.sw{background:rgba(56,189,248,.2);color:var(--software);}
+.insight-dot.sis{background:rgba(244,63,94,.2);color:var(--sistemas);}
+.insight strong{font-family:var(--mono);font-size:12px;display:block;margin-bottom:3px;}
+
+/* Callouts */
+.note{
+  display:flex;gap:12px;
+  background:rgba(99,179,255,.06);
+  border:1px solid rgba(99,179,255,.18);
+  border-radius:6px;
+  padding:14px 18px;
+  margin:16px 0;
+  font-size:14.5px;
+  color:var(--text);
+}
+.note-i{font-size:18px;flex-shrink:0;line-height:1.5;}
+.note.warn{background:rgba(251,191,36,.05);border-color:rgba(251,191,36,.2);}
+.note.ok{background:rgba(45,212,191,.05);border-color:rgba(45,212,191,.2);}
+
+/* Simul */
+.sim-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin:18px 0;}
+.sim-h{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:18px;letter-spacing:1px;text-transform:uppercase;}
+.sl-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.sl-lbl{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:130px;}
+input[type=range]{flex:1;accent-color:var(--accent);height:3px;cursor:pointer;}
+.sl-v{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:70px;text-align:right;}
+.results{display:flex;flex-wrap:wrap;gap:1px;margin-top:18px;border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+.res-item{flex:1;min-width:120px;background:var(--bg3);padding:14px 18px;}
+.res-v{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--gold);}
+.res-l{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0;}
+.chart-h{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+canvas{max-height:260px;}
+
+/* Inline code */
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface2);border:1px solid var(--border);padding:1px 7px;border-radius:3px;color:var(--accent);}
+
+p{color:var(--muted);font-size:15px;margin-bottom:10px;}
+p strong{color:var(--text);}
+li{color:var(--muted);font-size:14.5px;line-height:2;}
+
+/* Highlight */
+.ac{color:var(--accent);}
+.go{color:var(--gold);}
+.te{color:var(--teal);}
+.mm{color:var(--multimedia);}
+.ind{color:var(--industrial);}
+.dat{color:var(--datos);}
+.sw{color:var(--software);}
+.sis{color:var(--sistemas);}
+
+/* Decision tree */
+.dtree{display:flex;flex-direction:column;gap:12px;margin:18px 0;}
+.drow{display:flex;gap:10px;align-items:stretch;}
+.dcond{
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:6px;
+  padding:10px 14px;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--muted);
+  min-width:130px;
+  display:flex;align-items:center;
+}
+.darrow{display:flex;align-items:center;color:var(--dim);font-size:18px;padding:0 4px;}
+.dact{
+  flex:1;
+  background:rgba(99,179,255,.07);
+  border:1px solid rgba(99,179,255,.18);
+  border-radius:6px;
+  padding:10px 14px;
+  font-size:13.5px;
+  color:var(--text);
+}
+.dact span{font-family:var(--mono);font-size:11px;display:block;color:var(--accent);margin-bottom:4px;}
+
+/* Summary grid */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:18px 0;}
+.sum-item{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:14px;
+  text-align:center;
+}
+.sum-icon{font-size:24px;margin-bottom:8px;}
+.sum-lbl{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.5px;}
+
+/* Progress bar */
+.prog-bar{height:3px;background:var(--border2);border-radius:2px;margin-bottom:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;transition:width .6s;}
+
+@media(max-width:640px){
+  .hero{padding:44px 20px 36px;}
+  .wrap{padding:0 16px;}
+  .ctx-tab{font-size:10px;padding:8px 4px;}
+  .drow{flex-direction:column;}
+  .dcond{min-width:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-eyebrow">// Cálculo Integral · Unidad 4</div>
+  <h1>Integración de<br><span class="hl">Potencias Trigonométricas</span></h1>
+  <p class="hero-sub">Teoría, métodos y aplicaciones reales para ingenieros. Cada concepto conectado con tu carrera.</p>
+  <div class="career-pills">
+    <span class="cpill mm">🎮 Ing. Multimedia</span>
+    <span class="cpill ind">⚙️ Ing. Industrial</span>
+    <span class="cpill dat">📊 Ciencia de Datos</span>
+    <span class="cpill sw">💻 Ing. Software</span>
+    <span class="cpill sis">🔗 Ing. Sistemas</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+  <button class="nav-btn active" onclick="goTo('s0')">00_intro</button>
+  <button class="nav-btn" onclick="goTo('s1')">01_identidades</button>
+  <button class="nav-btn" onclick="goTo('s2')">02_metodos</button>
+  <button class="nav-btn" onclick="goTo('s3')">03_ejercicios</button>
+  <button class="nav-btn" onclick="goTo('s4')">04_apps_carrera</button>
+  <button class="nav-btn" onclick="goTo('s5')">05_costos</button>
+  <button class="nav-btn" onclick="goTo('s6')">06_asintótico</button>
+  <button class="nav-btn" onclick="goTo('s7')">07_simulador</button>
+</nav>
+
+<div class="wrap">
+
+<!-- ══════════════════ S0: INTRO ══════════════════ -->
+<section class="sec" id="s0">
+  <div class="sec-tag">// módulo 00 — introducción</div>
+  <h2 class="sec-h">¿Por qué importa esto en ingeniería?</h2>
+  <p class="sec-sub">Las señales, los ciclos de producción, los datos periódicos y los sistemas operativos comparten una base matemática: las funciones trigonométricas. Integrarlas es calcular <em>acumulaciones</em>.</p>
+
+  <!-- Context tabs -->
+  <div class="ctx-tabs">
+    <button class="ctx-tab active-mm" onclick="setCtx('intro','mm',this)">🎮 Multimedia</button>
+    <button class="ctx-tab" onclick="setCtx('intro','ind',this)">⚙️ Industrial</button>
+    <button class="ctx-tab" onclick="setCtx('intro','dat',this)">📊 Datos</button>
+    <button class="ctx-tab" onclick="setCtx('intro','sw',this)">💻 Software</button>
+    <button class="ctx-tab" onclick="setCtx('intro','sis',this)">🔗 Sistemas</button>
+  </div>
+  <div id="intro-mm" class="ctx-panel visible">
+    <div class="ctx-card mm">
+      <div class="ctx-icon">🎮</div>
+      <div class="ctx-title mm">Ingeniería Multimedia</div>
+      <div class="ctx-body">En audio y síntesis de sonido, una onda de audio es una suma de senos y cosenos (Serie de Fourier). La <strong>energía total de una señal</strong> en un intervalo se calcula integrando \(\sin^2\) y \(\cos^2\). En gráficos 3D, las normales de superficies esféricas involucran integrales de potencias trigonométricas. En animación paramétrica, las trayectorias circulares y las curvas de cámara usan exactamente estos integrales.</div>
+    </div>
+  </div>
+  <div id="intro-ind" class="ctx-panel">
+    <div class="ctx-card ind">
+      <div class="ctx-icon">⚙️</div>
+      <div class="ctx-title ind">Ingeniería Industrial</div>
+      <div class="ctx-body">La producción en turnos, el mantenimiento cíclico de maquinaria y el consumo energético de plantas industriales siguen patrones periódicos. El <strong>costo marginal oscilatorio</strong> del proceso productivo se modela con \(\sin^2\) y \(\cos^2\). Calcular el costo total de un lote o el promedio de largo plazo requiere resolver estas integrales.</div>
+    </div>
+  </div>
+  <div id="intro-dat" class="ctx-panel">
+    <div class="ctx-card dat">
+      <div class="ctx-icon">📊</div>
+      <div class="ctx-title dat">Ciencia de Datos</div>
+      <div class="ctx-body">Los <strong>kernels trigonométricos</strong> en machine learning (RBF, kernel de Mercer) y las transformaciones de Fourier discretas para análisis de series de tiempo requieren manejar potencias de funciones trigonométricas. El preprocesamiento de datos estacionales y la extracción de características periódicas en señales EEG, ECG o de mercado financiero involucran estos cálculos.</div>
+    </div>
+  </div>
+  <div id="intro-sw" class="ctx-panel">
+    <div class="ctx-card sw">
+      <div class="ctx-icon">💻</div>
+      <div class="ctx-title sw">Ingeniería de Software</div>
+      <div class="ctx-body">En desarrollo de videojuegos y simulaciones físicas, la <strong>energía cinética rotacional</strong>, los cálculos de iluminación (BRDF — función de distribución de reflectancia bidireccional) y los shaders de gráficos involucran integrales trigonométricas. También aparecen en algoritmos de interpolación para animaciones y en el procesamiento de señales de sensores IoT.</div>
+    </div>
+  </div>
+  <div id="intro-sis" class="ctx-panel">
+    <div class="ctx-card sis">
+      <div class="ctx-icon">🔗</div>
+      <div class="ctx-title sis">Ingeniería de Sistemas</div>
+      <div class="ctx-body">En telecomunicaciones y <strong>análisis de ancho de banda</strong>, la potencia de una señal se calcula con \(\int\sin^2(\omega t)\,dt\). En redes y teoría de colas, los patrones de tráfico son periódicos. El análisis de capacidad de sistemas y el dimensionamiento de servidores usando modelos de carga cíclica requieren resolver estas integrales.</div>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-top:28px;">
+    <div class="card" style="text-align:center;padding:20px;">
+      <div style="font-size:32px;margin-bottom:8px;">∫</div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--accent);margin-bottom:6px;">Integramos</div>
+      <div style="font-size:13px;color:var(--muted);">Potencias de sen, cos, tan, sec</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px;">
+      <div style="font-size:32px;margin-bottom:8px;">🔑</div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--gold);margin-bottom:6px;">Herramienta clave</div>
+      <div style="font-size:13px;color:var(--muted);">Identidades trigonométricas</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px;">
+      <div style="font-size:32px;margin-bottom:8px;">🎯</div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--teal);margin-bottom:6px;">Obtenemos</div>
+      <div style="font-size:13px;color:var(--muted);">Acumulados, promedios, costos</div>
+    </div>
+    <div class="card" style="text-align:center;padding:20px;">
+      <div style="font-size:32px;margin-bottom:8px;">⚡</div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--sistemas);margin-bottom:6px;">Aplicamos</div>
+      <div style="font-size:13px;color:var(--muted);">Señales, ciclos, producción</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ S1: IDENTIDADES ══════════════════ -->
+<section class="sec" id="s1">
+  <div class="sec-tag">// módulo 01 — fundamentos</div>
+  <h2 class="sec-h">Identidades Trigonométricas Esenciales</h2>
+  <p class="sec-sub">Tu "librería de funciones" para resolver integrales. Sin estas identidades, los métodos no funcionan.</p>
+
+  <div class="note ok">
+    <span class="note-i">💡</span>
+    <div><strong>Principio clave:</strong> El objetivo es siempre <em>reducir el exponente</em> o <em>cambiar la función</em> a una forma que podamos integrar directamente. Las identidades son el mecanismo de transformación.</div>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Identidad</th><th>Fórmula</th><th>Cuándo usarla</th><th>Carrera</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Pitagórica base</strong></td>
+          <td class="cd">\(\sin^2x + \cos^2x = 1\)</td>
+          <td class="sm">Reemplazar sin² o cos² cuando hay potencias mixtas</td>
+          <td><span class="cpill sw" style="font-size:10px;padding:2px 7px;">todas</span></td>
+        </tr>
+        <tr>
+          <td><strong>Reducción seno²</strong></td>
+          <td class="cd">\(\sin^2x = \dfrac{1-\cos 2x}{2}\)</td>
+          <td class="sm">Potencias pares de seno. Fundamental en análisis de señales</td>
+          <td><span class="cpill mm" style="font-size:10px;padding:2px 7px;">multimedia</span> <span class="cpill sis" style="font-size:10px;padding:2px 7px;">sistemas</span></td>
+        </tr>
+        <tr>
+          <td><strong>Reducción coseno²</strong></td>
+          <td class="cd">\(\cos^2x = \dfrac{1+\cos 2x}{2}\)</td>
+          <td class="sm">Potencias pares de coseno. Energía de señal, BRDF</td>
+          <td><span class="cpill sw" style="font-size:10px;padding:2px 7px;">software</span> <span class="cpill dat" style="font-size:10px;padding:2px 7px;">datos</span></td>
+        </tr>
+        <tr>
+          <td><strong>Tangente-secante</strong></td>
+          <td class="cd">\(\tan^2x = \sec^2x - 1\)</td>
+          <td class="sm">Integrales de tan^n, optimización no lineal</td>
+          <td><span class="cpill ind" style="font-size:10px;padding:2px 7px;">industrial</span></td>
+        </tr>
+        <tr>
+          <td><strong>Producto sen·cos</strong></td>
+          <td class="cd">\(\sin x\cos x = \dfrac{\sin 2x}{2}\)</td>
+          <td class="sm">Factorizar productos. Series de Fourier cruzadas</td>
+          <td><span class="cpill dat" style="font-size:10px;padding:2px 7px;">datos</span> <span class="cpill mm" style="font-size:10px;padding:2px 7px;">multimedia</span></td>
+        </tr>
+        <tr>
+          <td><strong>Producto sin²·cos²</strong></td>
+          <td class="cd">\(\sin^2x\cos^2x = \dfrac{1-\cos 4x}{8}\)</td>
+          <td class="sm">Combinar ambas reducciones: caso más frecuente</td>
+          <td><span class="cpill ind" style="font-size:10px;padding:2px 7px;">industrial</span> <span class="cpill sis" style="font-size:10px;padding:2px 7px;">sistemas</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-h">// truco mnemotécnico para las identidades de reducción</div>
+    <div class="fbox">
+      \[\text{función}^2(x) = \frac{1 \;\color{#f43f5e}{-}{\color{white}{/}}\color{#22c55e}{+}\; \cos(2x)}{2}\]
+    </div>
+    <p>El signo es <span class="sis">negativo (−) para seno</span> y <span class="ind">positivo (+) para coseno</span>.<br>
+    En código: <code>sin²  →  (1 - cos(2x)) / 2</code> &nbsp;|&nbsp; <code>cos²  →  (1 + cos(2x)) / 2</code></p>
+  </div>
+</section>
+
+<!-- ══════════════════ S2: MÉTODOS ══════════════════ -->
+<section class="sec" id="s2">
+  <div class="sec-tag">// módulo 02 — algoritmos de solución</div>
+  <h2 class="sec-h">Los 4 Métodos: Árbol de Decisión</h2>
+  <p class="sec-sub">Como un <code>switch-case</code> o un árbol de decisión en ML: cada tipo de integral tiene su algoritmo óptimo.</p>
+
+  <div class="dtree">
+    <div class="drow">
+      <div class="dcond">∫sinᵐ cosⁿ dx<br><span style="font-size:10px;color:var(--dim)">m impar</span></div>
+      <div class="darrow">→</div>
+      <div class="dact">
+        <span>// MÉTODO 1 · u = cos(x)</span>
+        Separar un factor sin(x). Usar sin²=1−cos². Sustituir u=cos(x), du=−sin(x)dx.
+      </div>
+    </div>
+    <div class="drow">
+      <div class="dcond">∫sinᵐ cosⁿ dx<br><span style="font-size:10px;color:var(--dim)">n impar</span></div>
+      <div class="darrow">→</div>
+      <div class="dact">
+        <span>// MÉTODO 2 · u = sin(x)</span>
+        Separar un factor cos(x). Usar cos²=1−sin². Sustituir u=sin(x), du=cos(x)dx.
+      </div>
+    </div>
+    <div class="drow">
+      <div class="dcond">∫sinᵐ cosⁿ dx<br><span style="font-size:10px;color:var(--dim)">m,n pares</span></div>
+      <div class="darrow">→</div>
+      <div class="dact">
+        <span>// MÉTODO 3 · identidades ½ ángulo</span>
+        Aplicar sin²=(1−cos2x)/2 y/o cos²=(1+cos2x)/2. Repetir si quedan potencias cuadradas.
+      </div>
+    </div>
+    <div class="drow">
+      <div class="dcond">∫tanⁿ dx<br>∫secⁿ dx</div>
+      <div class="darrow">→</div>
+      <div class="dact">
+        <span>// MÉTODO 4 · reducción de índice</span>
+        Para tan: usar tan²=sec²−1, reducir recursivamente. Para sec par: u=tan(x). Para sec impar: por partes.
+      </div>
+    </div>
+  </div>
+
+  <!-- Método 1 detallado -->
+  <div class="card">
+    <div class="card-h" style="color:var(--accent)">// MÉTODO 1 — potencia impar de seno → u = cos(x)</div>
+    <div class="fbox">
+      \[\int\sin^m x\cos^n x\,dx \xrightarrow{m\text{ impar}} \int\sin^{m-1}x\cos^n x\underbrace{\sin x\,dx}_{-du}\]
+    </div>
+    <div class="steps">
+      <div class="step"><div class="sn"></div><div class="sc"><div class="sl">// separar</div><div class="st">Escribe \(\sin^m x = \sin^{m-1}x \cdot \sin x\) (m−1 es par)</div></div></div>
+      <div class="step"><div class="sn"></div><div class="sc"><div class="sl">// transformar</div><div class="st">Usa \(\sin^{m-1}x = (1-\cos^2x)^{(m-1)/2}\). Todo queda en cos(x).</div></div></div>
+      <div class="step"><div class="sn"></div><div class="sc"><div class="sl">// sustituir</div><div class="st">Sea \(u=\cos x\), \(du=-\sin x\,dx\). La integral se convierte en un polinomio en u.</div></div></div>
+      <div class="step"><div class="sn"></div><div class="sc"><div class="sl">// integrar</div><div class="st">Aplica \(\int u^k\,du = u^{k+1}/(k+1)\) a cada término.</div></div></div>
+      <div class="step"><div class="sn"></div><div class="sc"><div class="sl">// revertir</div><div class="st">Sustituye u → cos(x).</div></div></div>
+    </div>
+    <div class="fbox teal">
+      <strong>Ejemplo:</strong> \(\int\sin^3 x\,dx = \int(1-\cos^2x)\sin x\,dx \xrightarrow{u=\cos x} -\int(1-u^2)\,du = -u+\dfrac{u^3}{3}+C = -\cos x+\dfrac{\cos^3 x}{3}+C\)
+    </div>
+  </div>
+
+  <!-- Método 3 detallado -->
+  <div class="card">
+    <div class="card-h" style="color:var(--gold)">// MÉTODO 3 — ambos pares → identidades de ángulo doble</div>
+    <p>Cuando <strong>m y n son ambos pares</strong>, no se puede "separar un factor". Se reduce el exponente usando las identidades de mitad:</p>
+    <div class="fbox gold">
+      \[\sin^4 x = \left(\frac{1-\cos 2x}{2}\right)^2 = \frac{1-2\cos 2x+\cos^2 2x}{4}\]
+      \[= \frac{1}{4}\left(1-2\cos 2x+\frac{1+\cos 4x}{2}\right) = \frac{3}{8}-\frac{\cos 2x}{2}+\frac{\cos 4x}{8}\]
+    </div>
+    <div class="note warn">
+      <span class="note-i">⚠️</span>
+      <div>Si después de reducir <strong>todavía aparece cos²(kx)</strong>, aplica la identidad de nuevo. El proceso es recursivo hasta que todos los términos tengan exponente 1.</div>
+    </div>
+  </div>
+
+  <!-- Método 4 -->
+  <div class="card">
+    <div class="card-h" style="color:var(--teal)">// MÉTODO 4 — reducción de índice para tangente</div>
+    <div class="fbox teal">
+      \[\int\tan^n x\,dx = \int\tan^{n-2}x\underbrace{(\sec^2 x-1)}_{\tan^2 x}\,dx = \frac{\tan^{n-1}x}{n-1}-\int\tan^{n-2}x\,dx\]
+    </div>
+    <p>Casos base: <code>∫tan x dx = ln|sec x| + C</code> &nbsp;·&nbsp; <code>∫1 dx = x + C</code></p>
+    <p>Cada aplicación <strong>reduce el exponente en 2</strong>: tan⁴ → tan² → tan⁰ = 1. Igual que la recursión en programación.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ S3: EJERCICIOS ACADÉMICOS ══════════════════ -->
+<section class="sec" id="s3">
+  <div class="sec-tag">// módulo 03 — práctica académica</div>
+  <h2 class="sec-h">Ejercicios Académicos</h2>
+  <p class="sec-sub">De menor a mayor complejidad. Clic en cada ejercicio para desplegar la solución completa.</p>
+
+  <!-- EJ 1 -->
+  <div class="ex" id="e1">
+    <div class="ex-head" onclick="tog('e1')">
+      <span class="ex-badge badge-base">Básico · 01</span>
+      <span class="ex-title">∫ cos³(x) dx — potencia impar de coseno</span>
+      <span class="ex-arr" id="e1-a">›</span>
+    </div>
+    <div class="ex-body" id="e1-b">
+      <div class="ex-prob">Calcular: \(\displaystyle\int\cos^3 x\,dx\)</div>
+      <div class="sol-lbl">// solución paso a paso</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">separar un factor cos(x)</div><div class="st">\(\int\cos^2 x\cdot\cos x\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">usar identidad pitagórica</div><div class="st">\(\cos^2x=1-\sin^2x \;\Rightarrow\; \int(1-\sin^2x)\cos x\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">sustituir u = sin(x)</div><div class="st">\(du=\cos x\,dx \;\Rightarrow\; \int(1-u^2)\,du\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integrar</div><div class="st">\(u - \dfrac{u^3}{3}+C\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">regresar a x</div><div class="st">Sustituir u = sin(x)</div></div></div>
+      </div>
+      <div class="fbox teal">\[\int\cos^3 x\,dx = \sin x - \dfrac{\sin^3 x}{3} + C\]</div>
+    </div>
+  </div>
+
+  <!-- EJ 2 -->
+  <div class="ex" id="e2">
+    <div class="ex-head" onclick="tog('e2')">
+      <span class="ex-badge badge-base">Básico · 02</span>
+      <span class="ex-title">∫ sin²(x) dx — potencia par, ángulo doble</span>
+      <span class="ex-arr" id="e2-a">›</span>
+    </div>
+    <div class="ex-body" id="e2-b">
+      <div class="ex-prob">Calcular: \(\displaystyle\int\sin^2 x\,dx\)</div>
+      <div class="sol-lbl">// solución</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">identidad de reducción</div><div class="st">\(\sin^2x=\dfrac{1-\cos(2x)}{2}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">separar la integral</div><div class="st">\(\dfrac{1}{2}\int 1\,dx - \dfrac{1}{2}\int\cos(2x)\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integrar cada término</div><div class="st">\(\dfrac{x}{2} - \dfrac{\sin(2x)}{4}+C\)</div></div></div>
+      </div>
+      <div class="fbox teal">\[\int\sin^2 x\,dx = \dfrac{x}{2} - \dfrac{\sin(2x)}{4}+C\]</div>
+      <div class="note ok"><span class="note-i">💡</span><div>Este es el resultado clave para calcular la <strong>potencia promedio</strong> de una señal sinusoidal — fundamental en multimedia y telecomunicaciones.</div></div>
+    </div>
+  </div>
+
+  <!-- EJ 3 -->
+  <div class="ex" id="e3">
+    <div class="ex-head" onclick="tog('e3')">
+      <span class="ex-badge badge-int">Intermedio · 03</span>
+      <span class="ex-title">∫ sin³(x) cos²(x) dx — potencias mixtas</span>
+      <span class="ex-arr" id="e3-a">›</span>
+    </div>
+    <div class="ex-body" id="e3-b">
+      <div class="ex-prob">Calcular: \(\displaystyle\int\sin^3x\cos^2x\,dx\)</div>
+      <div class="sol-lbl">// estrategia: m=3 (impar) → Método 1</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">separar factor sin(x)</div><div class="st">\(\int\sin^2x\cos^2x\cdot\sin x\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reemplazar sin²x = 1 − cos²x</div><div class="st">\(\int(1-\cos^2x)\cos^2x\sin x\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">expandir el producto</div><div class="st">\(\int(\cos^2x-\cos^4x)\sin x\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">u=cos(x), du=−sin(x)dx</div><div class="st">\(-\int(u^2-u^4)\,du = -\dfrac{u^3}{3}+\dfrac{u^5}{5}+C\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">sustituir u = cos(x)</div><div class="st">Resultado final</div></div></div>
+      </div>
+      <div class="fbox teal">\[\int\sin^3x\cos^2x\,dx = -\dfrac{\cos^3x}{3}+\dfrac{\cos^5x}{5}+C\]</div>
+    </div>
+  </div>
+
+  <!-- EJ 4 -->
+  <div class="ex" id="e4">
+    <div class="ex-head" onclick="tog('e4')">
+      <span class="ex-badge badge-int">Intermedio · 04</span>
+      <span class="ex-title">∫₀^(π/2) sin²(x)cos²(x) dx — integral definida</span>
+      <span class="ex-arr" id="e4-a">›</span>
+    </div>
+    <div class="ex-body" id="e4-b">
+      <div class="ex-prob">Calcular: \(\displaystyle\int_0^{\pi/2}\sin^2x\cos^2x\,dx\)</div>
+      <div class="sol-lbl">// ambas potencias pares → identidad de producto</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">identidad de producto</div><div class="st">\(\sin^2x\cos^2x = \dfrac{\sin^2(2x)}{4}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir sin²(2x)</div><div class="st">\(\dfrac{\sin^2(2x)}{4}=\dfrac{1-\cos(4x)}{8}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integrar</div><div class="st">\(\int_0^{\pi/2}\dfrac{1-\cos(4x)}{8}\,dx = \dfrac{1}{8}\left[x-\dfrac{\sin(4x)}{4}\right]_0^{\pi/2}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar límites</div><div class="st">sin(2π)=sin(0)=0 → \(\dfrac{1}{8}\cdot\dfrac{\pi}{2}=\dfrac{\pi}{16}\)</div></div></div>
+      </div>
+      <div class="fbox teal">\[\int_0^{\pi/2}\sin^2x\cos^2x\,dx = \dfrac{\pi}{16}\approx 0.1963\]</div>
+    </div>
+  </div>
+
+  <!-- EJ 5 -->
+  <div class="ex" id="e5">
+    <div class="ex-head" onclick="tog('e5')">
+      <span class="ex-badge badge-adv">Avanzado · 05</span>
+      <span class="ex-title">∫ tan⁴(x) dx — reducción recursiva de índice</span>
+      <span class="ex-arr" id="e5-a">›</span>
+    </div>
+    <div class="ex-body" id="e5-b">
+      <div class="ex-prob">Calcular: \(\displaystyle\int\tan^4x\,dx\)</div>
+      <div class="sol-lbl">// reducción: tan⁴ → tan² → tan⁰</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">separar: tan⁴ = tan²·tan²</div><div class="st">\(\int\tan^2x(\sec^2x-1)\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">distribuir</div><div class="st">\(\int\tan^2x\sec^2x\,dx - \int\tan^2x\,dx\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">primera integral: u=tan(x)</div><div class="st">\(\int u^2\,du = \dfrac{u^3}{3}=\dfrac{\tan^3x}{3}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">segunda integral: reducir de nuevo</div><div class="st">\(\int(\sec^2x-1)\,dx = \tan x - x + C\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">combinar resultados</div><div class="st">\(\dfrac{\tan^3x}{3} - \tan x + x + C\)</div></div></div>
+      </div>
+      <div class="fbox teal">\[\int\tan^4x\,dx = \dfrac{\tan^3x}{3}-\tan x+x+C\]</div>
+    </div>
+  </div>
+
+  <!-- EJ 6 — sin⁴ ambos pares -->
+  <div class="ex" id="e6">
+    <div class="ex-head" onclick="tog('e6')">
+      <span class="ex-badge badge-adv">Avanzado · 06</span>
+      <span class="ex-title">∫ sin⁴(x) dx — doble reducción con ángulo doble</span>
+      <span class="ex-arr" id="e6-a">›</span>
+    </div>
+    <div class="ex-body" id="e6-b">
+      <div class="ex-prob">Calcular: \(\displaystyle\int\sin^4x\,dx\)</div>
+      <div class="sol-lbl">// reducción en dos pasos</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">primera reducción</div><div class="st">\(\sin^4x = \left(\dfrac{1-\cos 2x}{2}\right)^2 = \dfrac{1-2\cos 2x+\cos^2 2x}{4}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir cos²(2x)</div><div class="st">\(\cos^2(2x)=\dfrac{1+\cos 4x}{2}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">sustituir y simplificar</div><div class="st">\(\sin^4x = \dfrac{3}{8}-\dfrac{\cos 2x}{2}+\dfrac{\cos 4x}{8}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integrar término a término</div><div class="st">\(\dfrac{3x}{8}-\dfrac{\sin 2x}{4}+\dfrac{\sin 4x}{32}+C\)</div></div></div>
+      </div>
+      <div class="fbox teal">\[\int\sin^4x\,dx = \dfrac{3x}{8}-\dfrac{\sin 2x}{4}+\dfrac{\sin 4x}{32}+C\]</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ S4: APLICACIONES POR CARRERA ══════════════════ -->
+<section class="sec" id="s4">
+  <div class="sec-tag">// módulo 04 — aplicaciones por carrera</div>
+  <h2 class="sec-h">Aplicaciones Reales por Carrera</h2>
+  <p class="sec-sub">Los mismos métodos, contextos completamente distintos. Selecciona tu carrera para ver los ejercicios aplicados.</p>
+
+  <div class="ctx-tabs" id="app-tabs">
+    <button class="ctx-tab active-mm" onclick="setCtx('app','mm',this)">🎮 Multimedia</button>
+    <button class="ctx-tab" onclick="setCtx('app','ind',this)">⚙️ Industrial</button>
+    <button class="ctx-tab" onclick="setCtx('app','dat',this)">📊 Datos</button>
+    <button class="ctx-tab" onclick="setCtx('app','sw',this)">💻 Software</button>
+    <button class="ctx-tab" onclick="setCtx('app','sis',this)">🔗 Sistemas</button>
+  </div>
+
+  <!-- MULTIMEDIA -->
+  <div id="app-mm" class="ctx-panel visible">
+    <div class="ctx-card mm" style="border-radius:0 0 8px 8px;">
+      <div class="ctx-title mm">// Multimedia — Energía de Señal de Audio</div>
+      <div class="ctx-body" style="margin-bottom:16px;">Una señal de audio digital pura es \(s(t)=A\sin(\omega t)\). La <strong>energía</strong> de la señal en un intervalo \([0,T]\) se define como \(E = \int_0^T s^2(t)\,dt\). Esto determina el volumen percibido (RMS — Root Mean Square).</div>
+      <div class="ex" id="eapp-mm" style="border-color:rgba(249,115,22,.3);">
+        <div class="ex-head" onclick="tog('eapp-mm')" style="background:rgba(249,115,22,.05);">
+          <span class="ex-badge badge-mm">Multimedia</span>
+          <span class="ex-title">Energía de señal sinusoidal en un período</span>
+          <span class="ex-arr" id="eapp-mm-a">›</span>
+        </div>
+        <div class="ex-body" id="eapp-mm-b">
+          <div class="ex-prob">Una señal de audio es \(s(t)=3\sin(2\pi\cdot 440\cdot t)\) (nota La, 440 Hz). Calcular la energía en un período \(T=\frac{1}{440}\) s.</div>
+          <div class="sol-lbl">// integrar s²(t)</div>
+          <div class="steps">
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">plantear la integral</div><div class="st">\(E=\int_0^{1/440}9\sin^2(2\pi\cdot 440\cdot t)\,dt\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir sin²</div><div class="st">\(E=9\int_0^{1/440}\dfrac{1-\cos(2\cdot 2\pi\cdot 440\cdot t)}{2}\,dt = \dfrac{9}{2}\int_0^{1/440}(1-\cos(1760\pi t))\,dt\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integrar</div><div class="st">\(\dfrac{9}{2}\left[t-\dfrac{\sin(1760\pi t)}{1760\pi}\right]_0^{1/440}\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar: sin(4π)=0</div><div class="st">\(\dfrac{9}{2}\cdot\dfrac{1}{440} = \dfrac{9}{880}\) Joules (por período)</div></div></div>
+          </div>
+          <div class="fbox"><strong>Energía por período:</strong> \(E = \dfrac{A^2 T}{2} = \dfrac{9}{880} \approx 0.01023\) J</div>
+          <div class="insight mm">
+            <div class="insight-row">
+              <div class="insight-dot mm">🎮</div>
+              <div><strong class="mm">// aplicación en audio digital</strong>El valor RMS (Vrms = A/√2 = 3/√2 ≈ 2.12) es lo que mide el medidor de volumen de un DAW (Digital Audio Workstation). La integral de sin² es la base matemática del nivel en dB: <code>dB = 20·log₁₀(Vrms)</code>. El resultado E=A²T/2 muestra que la energía de una sinusoide pura es siempre la mitad de su amplitud al cuadrado por el período, sin importar la frecuencia.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDUSTRIAL -->
+  <div id="app-ind" class="ctx-panel">
+    <div class="ctx-card ind" style="border-radius:0 0 8px 8px;">
+      <div class="ctx-title ind">// Industrial — Eficiencia de Producción Cíclica</div>
+      <div class="ctx-body" style="margin-bottom:16px;">Una línea de producción opera en ciclos. La tasa de producción efectiva varía con el tiempo debido a la fatiga operativa y el mantenimiento preventivo.</div>
+      <div class="ex" id="eapp-ind" style="border-color:rgba(34,197,94,.3);">
+        <div class="ex-head" onclick="tog('eapp-ind')" style="background:rgba(34,197,94,.05);">
+          <span class="ex-badge badge-ind">Industrial</span>
+          <span class="ex-title">Producción acumulada con eficiencia oscilante</span>
+          <span class="ex-arr" id="eapp-ind-a">›</span>
+        </div>
+        <div class="ex-body" id="eapp-ind-b">
+          <div class="ex-prob">La tasa de producción de una planta (unidades/hora) es: \[P(t) = 500\cos^2\!\left(\frac{\pi t}{8}\right) + 200\] donde t es la hora del turno de 8 horas. Calcular la producción total del turno y la tasa promedio horaria.</div>
+          <div class="sol-lbl">// integral de P(t) en [0,8]</div>
+          <div class="steps">
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">parte constante</div><div class="st">\(\int_0^8 200\,dt = 1600\) unidades</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir cos²(πt/8)</div><div class="st">\(500\int_0^8\dfrac{1+\cos(\pi t/4)}{2}\,dt = 250\left[t+\dfrac{4\sin(\pi t/4)}{\pi}\right]_0^8\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar: sin(2π)=sin(0)=0</div><div class="st">\(250\times 8 = 2000\) unidades</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">producción total</div><div class="st">\(Q_{total} = 1600 + 2000 = 3600\) unidades</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">tasa promedio</div><div class="st">\(\bar{P} = 3600/8 = 450\) unidades/hora</div></div></div>
+          </div>
+          <div class="fbox ind">\[Q_{total} = 3600 \text{ unidades} \qquad \bar{P} = 450 \text{ u/h}\]</div>
+          <div class="insight ind">
+            <div class="insight-row">
+              <div class="insight-dot ind">⚙️</div>
+              <div><strong class="ind">// decisión operacional</strong>La producción oscila entre 200 u/h (mínimo al final del turno) y 700 u/h (inicio). El promedio de 450 u/h informa la capacidad planificada del inventario. Si el cliente pide 4000 unidades/turno, la planta tiene un déficit del 11% y se necesita reducir el coeficiente de variación en el proceso.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATOS -->
+  <div id="app-dat" class="ctx-panel">
+    <div class="ctx-card dat" style="border-radius:0 0 8px 8px;">
+      <div class="ctx-title dat">// Ciencia de Datos — Ortogonalidad de Funciones de Base</div>
+      <div class="ctx-body" style="margin-bottom:16px;">En ML y análisis espectral, las funciones sinusoidales forman una <strong>base ortogonal</strong>: \(\int_{-\pi}^{\pi}\sin(mx)\cos(nx)\,dx=0\) para todos m,n. Esta propiedad hace posible la Transformada de Fourier y los Kernels trigonométricos.</div>
+      <div class="ex" id="eapp-dat" style="border-color:rgba(167,139,250,.3);">
+        <div class="ex-head" onclick="tog('eapp-dat')" style="background:rgba(167,139,250,.05);">
+          <span class="ex-badge badge-dat">Datos</span>
+          <span class="ex-title">Verificar ortogonalidad y calcular coeficientes de Fourier</span>
+          <span class="ex-arr" id="eapp-dat-a">›</span>
+        </div>
+        <div class="ex-body" id="eapp-dat-b">
+          <div class="ex-prob">
+            (a) Verificar que \(\int_{-\pi}^{\pi}\sin^2(x)\,dx = \pi\).<br>
+            (b) Calcular el coeficiente \(b_1 = \dfrac{1}{\pi}\int_{-\pi}^{\pi}f(x)\sin(x)\,dx\) para \(f(x)=x\) en \([-\pi,\pi]\).
+          </div>
+          <div class="sol-lbl">// parte (a) — norma de la función base</div>
+          <div class="steps">
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir sin²(x)</div><div class="st">\(\int_{-\pi}^{\pi}\dfrac{1-\cos(2x)}{2}\,dx = \dfrac{1}{2}\left[x-\dfrac{\sin(2x)}{2}\right]_{-\pi}^{\pi}\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar</div><div class="st">sin(2π)=sin(−2π)=0 → \(\dfrac{1}{2}(\pi-(-\pi))=\dfrac{2\pi}{2}=\pi\) ✓</div></div></div>
+          </div>
+          <div class="sol-lbl">// parte (b) — coeficiente de Fourier b₁</div>
+          <div class="steps">
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integrar por partes</div><div class="st">\(\int_{-\pi}^{\pi}x\sin(x)\,dx\): sea u=x, dv=sin(x)dx → \([-x\cos x]_{-\pi}^{\pi}+\int_{-\pi}^{\pi}\cos x\,dx\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar</div><div class="st">\((-\pi(-1)-(\pi(-1)))+[\sin x]_{-\pi}^{\pi} = 2\pi + 0 = 2\pi\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">calcular b₁</div><div class="st">\(b_1 = \dfrac{1}{\pi}\cdot 2\pi = 2\)</div></div></div>
+          </div>
+          <div class="fbox dat">\[b_1 = 2 \quad\Rightarrow\quad f(x)\approx 2\sin(x)-\sin(2x)+\frac{2}{3}\sin(3x)-\cdots\]</div>
+          <div class="insight dat">
+            <div class="insight-row">
+              <div class="insight-dot dat">📊</div>
+              <div><strong class="dat">// conexión con ML</strong>La ortogonalidad implica que cada coeficiente de Fourier b_n se calcula <em>independientemente</em> de los demás — esto hace que la Transformada de Fourier sea equivalente a una regresión lineal con base ortogonal, sin multicolinealidad. En series de tiempo (ARIMA, Prophet), los componentes de estacionalidad son exactamente estos coeficientes.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOFTWARE -->
+  <div id="app-sw" class="ctx-panel">
+    <div class="ctx-card sw" style="border-radius:0 0 8px 8px;">
+      <div class="ctx-title sw">// Software — Iluminación en Gráficos 3D (BRDF)</div>
+      <div class="ctx-body" style="margin-bottom:16px;">En rendering de videojuegos, la <strong>BRDF lambertiana</strong> integra la irradiancia sobre un hemisferio. El modelo de iluminación difusa involucra \(\int\cos(\theta)\,d\Omega\) sobre el hemisferio, que se descompone en integrales de potencias trigonométricas.</div>
+      <div class="ex" id="eapp-sw" style="border-color:rgba(56,189,248,.3);">
+        <div class="ex-head" onclick="tog('eapp-sw')" style="background:rgba(56,189,248,.05);">
+          <span class="ex-badge badge-sw">Software</span>
+          <span class="ex-title">Integral de iluminación difusa sobre hemisferio</span>
+          <span class="ex-arr" id="eapp-sw-a">›</span>
+        </div>
+        <div class="ex-body" id="eapp-sw-b">
+          <div class="ex-prob">La irradiancia difusa total de una superficie con albedo \(\rho\) expuesta a luz uniforme \(L\) es:<br>\[E = \rho L\int_0^{2\pi}\int_0^{\pi/2}\cos(\theta)\sin(\theta)\,d\theta\,d\phi\]Calcular E en función de ρ y L.</div>
+          <div class="sol-lbl">// integral sobre esfera</div>
+          <div class="steps">
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">separar integrales</div><div class="st">\(E = \rho L\cdot\int_0^{2\pi}d\phi\cdot\int_0^{\pi/2}\cos\theta\sin\theta\,d\theta\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integral en φ</div><div class="st">\(\int_0^{2\pi}d\phi = 2\pi\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">integral en θ: usar sin·cos = sin(2θ)/2</div><div class="st">\(\int_0^{\pi/2}\dfrac{\sin(2\theta)}{2}\,d\theta = \dfrac{1}{2}\left[-\dfrac{\cos(2\theta)}{2}\right]_0^{\pi/2}=\dfrac{1}{2}\cdot 1=\dfrac{1}{2}\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">combinar</div><div class="st">\(E = \rho L\cdot 2\pi\cdot\dfrac{1}{2}=\pi\rho L\)</div></div></div>
+          </div>
+          <div class="fbox sw">\[E = \pi\rho L\]</div>
+          <div class="insight sw">
+            <div class="insight-row">
+              <div class="insight-dot sw">💻</div>
+              <div><strong class="sw">// en el shader</strong>En GLSL/HLSL, este resultado se usa como: <code>irradiance = PI * albedo * light_color</code>. El factor π es exactamente el que diferencia los modelos "radiometrically correct" de los modelos ad-hoc. OpenGL y Vulkan asumen esta integral resuelta cuando calculan el componente difuso de un material PBR (Physically Based Rendering).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SISTEMAS -->
+  <div id="app-sis" class="ctx-panel">
+    <div class="ctx-card sis" style="border-radius:0 0 8px 8px;">
+      <div class="ctx-title sis">// Sistemas — Potencia Promedio de Señal en Red</div>
+      <div class="ctx-body" style="margin-bottom:16px;">En telecomunicaciones, la <strong>potencia promedio</strong> de una señal portadora \(s(t)=A\cos(\omega_c t+\phi)\) determina el ancho de banda necesario y el ratio señal-ruido (SNR) en el canal.</div>
+      <div class="ex" id="eapp-sis" style="border-color:rgba(244,63,94,.3);">
+        <div class="ex-head" onclick="tog('eapp-sis')" style="background:rgba(244,63,94,.05);">
+          <span class="ex-badge badge-sis">Sistemas</span>
+          <span class="ex-title">Potencia promedio de señal portadora modulada</span>
+          <span class="ex-arr" id="eapp-sis-a">›</span>
+        </div>
+        <div class="ex-body" id="eapp-sis-b">
+          <div class="ex-prob">Una señal modulada AM es \(s(t)=(1+0.5\cos(2\pi\cdot 1000\cdot t))\cos(2\pi\cdot 10^6\cdot t)\). Calcular la potencia promedio \(P=\dfrac{1}{T}\int_0^T s^2(t)\,dt\) donde T es el período de la portadora.</div>
+          <div class="sol-lbl">// expandir y aplicar propiedad de ortogonalidad</div>
+          <div class="steps">
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">expandir s²(t)</div><div class="st">\(s^2=(1+0.5\cos\omega_m t)^2\cos^2\omega_c t = (1+\cos\omega_m t+0.25\cos^2\omega_m t)\cos^2\omega_c t\)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">propiedad: promedio de cos² = 1/2</div><div class="st">Los términos cruzados cos(ω_m t)·cos²(ω_c t) promedian a 0 (frecuencias distintas)</div></div></div>
+            <div class="step"><div class="sn"></div><div class="sc"><div class="sl">calcular cada término</div><div class="st">\(P = \dfrac{1}{2}\cdot 1 + \dfrac{0.25}{2}\cdot\dfrac{1}{2} = 0.5 + 0.0625 = 0.5625\) W</div></div></div>
+          </div>
+          <div class="fbox sis">\[P = \dfrac{A^2}{2}\left(1+\dfrac{m^2}{2}\right)=\dfrac{1}{2}\left(1+\dfrac{0.25}{2}\right)=0.5625\text{ W}\]</div>
+          <div class="insight sis">
+            <div class="insight-row">
+              <div class="insight-dot sis">🔗</div>
+              <div><strong class="sis">// en sistemas de comunicación</strong>La fórmula P=A²/2·(1+m²/2) muestra que la potencia total de una señal AM se distribuye: 1/(1+m²/2) en la portadora y m²/2/(1+m²/2) en las bandas laterales. Con m=0.5, solo el 11% de la potencia transmitida contiene información útil. Esto explica por qué AM es ineficiente comparado con SSB (Single Sideband) donde la integral daría P=A²m²/4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ S5: COSTOS MARGINALES ══════════════════ -->
+<section class="sec" id="s5">
+  <div class="sec-tag">// módulo 05 — costos marginales</div>
+  <h2 class="sec-h">Estimación de Costos Marginales</h2>
+  <p class="sec-sub">Relación fundamental: si conocemos CM(q), la integral nos da el costo total. Aplicable a producción industrial, costo computacional de algoritmos y uso de recursos en infraestructura.</p>
+
+  <div class="fbox gold">
+    \[C(q) = C_0 + \int_0^q CM(t)\,dt\]
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;margin-bottom:0;">donde \(C_0\) = costos fijos, \(CM(t)\) = costo de producir la unidad t-ésima</p>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-h">// ¿Por qué CM es trigonométrico?</div>
+      <ul style="list-style:none;margin-top:4px;">
+        <li style="display:flex;gap:10px;margin-bottom:10px;"><span class="mm" style="font-size:18px;flex-shrink:0;">▸</span><span><strong>Multimedia:</strong> Costo de renderizado oscila con la complejidad de escenas (ciclos día/noche, efectos)</span></li>
+        <li style="display:flex;gap:10px;margin-bottom:10px;"><span class="ind" style="font-size:18px;flex-shrink:0;">▸</span><span><strong>Industrial:</strong> Fatiga de maquinaria, mantenimiento preventivo cíclico</span></li>
+        <li style="display:flex;gap:10px;margin-bottom:10px;"><span class="sw" style="font-size:18px;flex-shrink:0;">▸</span><span><strong>Software:</strong> Costo de cómputo (cloud $) por ciclo de procesamiento</span></li>
+        <li style="display:flex;gap:10px;"><span class="sis" style="font-size:18px;flex-shrink:0;">▸</span><span><strong>Sistemas:</strong> Costo de ancho de banda por carga oscilante en servidores</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-h">// valores promedio de largo plazo</div>
+      <p>El promedio de \(\sin^2\) y \(\cos^2\) sobre un ciclo completo es siempre <span class="ac" style="font-family:var(--mono);font-size:18px;font-weight:600;">½</span>.</p>
+      <div class="fbox">
+        \[\lim_{q\to\infty}\frac{C(q)}{q} = A + \frac{B}{2}\]
+        <p style="font-size:12px;color:var(--muted);margin-top:6px;margin-bottom:0;">para CM(q) = A + B·sin²(ωq)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" id="exc1">
+    <div class="ex-head" onclick="tog('exc1')">
+      <span class="ex-badge badge-ind">Industrial + Datos</span>
+      <span class="ex-title">CM-1: Costo total desde costo marginal oscilatorio</span>
+      <span class="ex-arr" id="exc1-a">›</span>
+    </div>
+    <div class="ex-body" id="exc1-b">
+      <div class="ex-prob">El costo marginal de una planta (miles $/tonelada) es:<br>\[CM(q) = 200 + 60\sin^2\!\left(\frac{\pi q}{100}\right)\]con costos fijos C₀ = $800k. Calcular C(100) y C(200), y el costo medio de largo plazo.</div>
+      <div class="sol-lbl">// C(100)</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">parte constante</div><div class="st">\(\int_0^{100}200\,dq = 20{,}000\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir sin²(πq/100)</div><div class="st">\(60\int_0^{100}\dfrac{1-\cos(2\pi q/100)}{2}\,dq = 30\left[q-\dfrac{100}{2\pi}\sin\!\left(\dfrac{2\pi q}{100}\right)\right]_0^{100}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar: sin(2π)=0</div><div class="st">\(30\times 100 = 3{,}000\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">C(100)</div><div class="st">\(800 + 20{,}000 + 3{,}000 = 23{,}800\) miles de pesos</div></div></div>
+      </div>
+      <div class="fbox ind">\[C(100) = \$23{,}800{,}000 \quad C(200) = \$46{,}600{,}000 \quad \overline{CM}_{LP} = \$230{,}000/\text{ton}\]</div>
+      <div class="insight ind">
+        <div class="insight-row">
+          <div class="insight-dot ind">⚙️</div>
+          <div><strong class="ind">// para Industrial</strong>El costo medio de LP = 200 + 60/2 = $230k/ton es el precio mínimo de equilibrio. Si el precio de mercado cae por debajo, el producto no es rentable.</div>
+        </div>
+        <div class="insight-row">
+          <div class="insight-dot dat">📊</div>
+          <div><strong class="dat">// para Ciencia de Datos</strong>Esta misma estructura aparece en el costo de entrenamiento de un modelo ML por época: CM(q) oscila con los mini-batches. Integrar da el costo computacional total del entrenamiento.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" id="exc2">
+    <div class="ex-head" onclick="tog('exc2')">
+      <span class="ex-badge badge-sw">Software + Sistemas</span>
+      <span class="ex-title">CM-2: Costo de infraestructura cloud con carga oscilante</span>
+      <span class="ex-arr" id="exc2-a">›</span>
+    </div>
+    <div class="ex-body" id="exc2-b">
+      <div class="ex-prob">El costo por hora de una plataforma cloud (USD/hora) varía con la carga de usuarios según:<br>\[CM(t) = 50 + 30\cos^2\!\left(\frac{\pi t}{12}\right)\] donde t es la hora del día (0 a 24). Calcular el costo total diario.</div>
+      <div class="sol-lbl">// integral en [0,24]</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">parte constante</div><div class="st">\(\int_0^{24}50\,dt = 1{,}200\) USD</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">reducir cos²(πt/12)</div><div class="st">\(30\int_0^{24}\dfrac{1+\cos(\pi t/6)}{2}\,dt = 15\left[t+\dfrac{6\sin(\pi t/6)}{\pi}\right]_0^{24}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">evaluar: sin(4π)=0</div><div class="st">\(15\times 24 = 360\) USD</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">costo total</div><div class="st">\(1{,}200 + 360 = 1{,}560\) USD/día</div></div></div>
+      </div>
+      <div class="fbox sw">\[\text{Costo diario} = \$1{,}560 \quad \Rightarrow \quad \text{Mensual} \approx \$46{,}800\]</div>
+      <div class="insight sw">
+        <div class="insight-row">
+          <div class="insight-dot sw">💻</div>
+          <div><strong class="sw">// decisión de arquitectura</strong>El costo promedio es $65/h pero pico a $80/h y baja a $50/h. Con auto-scaling, si apagamos instancias en horas valle (carga &lt;50%), ahorramos hasta $360/día. El análisis de la integral da el presupuesto base antes de optimizaciones.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ S6: ASINTÓTICO ══════════════════ -->
+<section class="sec" id="s6">
+  <div class="sec-tag">// módulo 06 — análisis asintótico</div>
+  <h2 class="sec-h">Comportamiento Asintótico de Tendencias</h2>
+  <p class="sec-sub">¿Qué pasa cuando la producción, los datos o las peticiones crecen indefinidamente? El análisis asintótico responde si los costos convergen o divergen.</p>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-h" style="color:var(--teal)">// caso 1 — costo medio convergente</div>
+      <div class="fbox teal">
+        \[\lim_{q\to\infty}\frac{C(q)}{q} = A+\frac{B}{2}\]
+      </div>
+      <p>Para \(CM(q)=A+B\sin^2(\omega q)\): el promedio de sin² = ½ en cualquier número entero de períodos. El costo medio de LP es <strong>constante</strong>. No hay economías ni deseconomías de escala.</p>
+    </div>
+    <div class="card">
+      <div class="card-h" style="color:var(--sistemas)">// caso 2 — oscilaciones amortiguadas</div>
+      <div class="fbox sis">
+        \[CM(q) = \frac{A\sin^2(\omega q)}{q}\]
+      </div>
+      <p>El CM <strong>decrece</strong> con q (economías de escala). La integral diverge logarítmicamente: el costo total crece pero cada unidad adicional cuesta menos → <em>rendimientos crecientes</em>.</p>
+    </div>
+  </div>
+
+  <div class="ex" id="exas1">
+    <div class="ex-head" onclick="tog('exas1')">
+      <span class="ex-badge badge-adv">Asintótico</span>
+      <span class="ex-title">AS-1: Umbral de precio de equilibrio de largo plazo</span>
+      <span class="ex-arr" id="exas1-a">›</span>
+    </div>
+    <div class="ex-body" id="exas1-b">
+      <div class="ex-prob">Una empresa de software tiene costo marginal de cómputo (USD/1000 requests):<br>\[CM(q) = 120 + 80\cos^2\!\left(\frac{\pi q}{500}\right)\] Determinar el precio mínimo de equilibrio de largo plazo.</div>
+      <div class="sol-lbl">// valor promedio asintótico</div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">promedio asintótico de cos²</div><div class="st">Sobre muchos ciclos completos: \(\langle\cos^2(\omega q)\rangle = \frac{1}{2}\)</div></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><div class="sl">calcular costo medio LP</div><div class="st">\(\lim_{q\to\infty}\dfrac{C(q)}{q} = 120 + 80\cdot\dfrac{1}{2} = 120 + 40 = 160\)</div></div></div>
+      </div>
+      <div class="fbox sw">\[\text{Precio mínimo} = \$160 \text{ USD por 1000 requests}\]</div>
+      <div class="insight sw">
+        <div class="insight-row">
+          <div class="insight-dot sw">💻</div>
+          <div><strong class="sw">// pricing de SaaS</strong>Fijar el precio a $160/1k req cubre exactamente los costos en el largo plazo. Un precio de $200/1k da un margen del 25%. Si un competidor ofrece $140/1k, están operando por debajo del costo y su modelo no es sostenible — datos de negocio derivados de una integral.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ S7: SIMULADOR ══════════════════ -->
+<section class="sec" id="s7">
+  <div class="sec-tag">// módulo 07 — simulador interactivo</div>
+  <h2 class="sec-h">Simulador de Costo Marginal</h2>
+  <p class="sec-sub">Ajusta los parámetros del modelo y observa cómo cambian el costo total y el umbral de equilibrio en tiempo real.</p>
+
+  <div class="sim-wrap">
+    <div class="sim-h">// parámetros del modelo: CM(q) = A + B·sin²(πq/T)</div>
+    <div class="sl-row"><span class="sl-lbl">A — costo base</span><input type="range" id="sA" min="50" max="400" value="200" step="10" oninput="sim()"><span class="sl-v" id="vA">200</span></div>
+    <div class="sl-row"><span class="sl-lbl">B — amplitud</span><input type="range" id="sB" min="0" max="200" value="80" step="5" oninput="sim()"><span class="sl-v" id="vB">80</span></div>
+    <div class="sl-row"><span class="sl-lbl">T — período (u)</span><input type="range" id="sT" min="20" max="300" value="100" step="10" oninput="sim()"><span class="sl-v" id="vT">100</span></div>
+    <div class="sl-row"><span class="sl-lbl">q — producción</span><input type="range" id="sQ" min="50" max="600" value="300" step="10" oninput="sim()"><span class="sl-v" id="vQ">300</span></div>
+    <div class="sl-row"><span class="sl-lbl">C₀ — fijos</span><input type="range" id="sCF" min="0" max="5000" value="1000" step="100" oninput="sim()"><span class="sl-v" id="vCF">1000</span></div>
+    <div class="results">
+      <div class="res-item"><div class="res-v" id="rTotal">—</div><div class="res-l">Costo Total</div></div>
+      <div class="res-item"><div class="res-v" id="rMed">—</div><div class="res-l">Costo Medio</div></div>
+      <div class="res-item"><div class="res-v" id="rLP">—</div><div class="res-l">CM largo plazo</div></div>
+      <div class="res-item"><div class="res-v" id="rCMq">—</div><div class="res-l">CM en q actual</div></div>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <div class="chart-h">// evolución del costo marginal y total</div>
+    <canvas id="ch1"></canvas>
+  </div>
+  <div class="chart-box">
+    <div class="chart-h">// convergencia del costo medio hacia el límite LP</div>
+    <canvas id="ch2"></canvas>
+  </div>
+
+  <!-- Resumen final -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:28px;margin-top:28px;">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">// resumen de la clase</div>
+    <div class="g2">
+      <div>
+        <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px;">MÉTODOS VISTOS</p>
+        <ul style="list-style:none;">
+          <li style="display:flex;gap:8px;margin-bottom:8px;font-size:13.5px;"><code>M1</code><span>Potencia impar de sen/cos → u=cos(x) o u=sin(x)</span></li>
+          <li style="display:flex;gap:8px;margin-bottom:8px;font-size:13.5px;"><code>M2</code><span>Ambas potencias pares → identidades ½ ángulo</span></li>
+          <li style="display:flex;gap:8px;margin-bottom:8px;font-size:13.5px;"><code>M3</code><span>Tangentes → reducción tan²=sec²−1 (recursión)</span></li>
+          <li style="display:flex;gap:8px;font-size:13.5px;"><code>M4</code><span>Secantes pares → u=tan(x)</span></li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px;">APLICACIONES POR CARRERA</p>
+        <ul style="list-style:none;">
+          <li style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;"><span class="mm">🎮</span><span>Energía de señal de audio, Series de Fourier</span></li>
+          <li style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;"><span class="ind">⚙️</span><span>Producción acumulada, costos de ciclo</span></li>
+          <li style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;"><span class="dat">📊</span><span>Ortogonalidad de funciones base, coef. Fourier</span></li>
+          <li style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;"><span class="sw">💻</span><span>Iluminación BRDF, costo cloud, rendering PBR</span></li>
+          <li style="display:flex;gap:8px;font-size:13px;"><span class="sis">🔗</span><span>Potencia de señal, eficiencia de canal AM/SSB</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="prog-bar" style="margin-top:20px;"><div class="prog-fill" style="width:100%;background:var(--accent);"></div></div>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:6px;margin-bottom:0;">Módulo completado · 8/8 secciones</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer style="text-align:center;padding:28px 24px;border-top:1px solid var(--border);margin-top:8px;">
+  <span style="font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:2px;">// CÁLCULO INTEGRAL · UNIDAD 4 · INTEGRACIÓN TRIGONOMÉTRICA</span>
+</footer>
+
+<script>
+// ── NAV ──
+function goTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+const secs=['s0','s1','s2','s3','s4','s5','s6','s7'];
+const navBtns=document.querySelectorAll('.nav-btn');
+window.addEventListener('scroll',()=>{
+  let cur='s0';
+  secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=90)cur=id;});
+  navBtns.forEach((b,i)=>b.classList.toggle('active',i===secs.indexOf(cur)));
+});
+
+// ── CONTEXT TABS ──
+function setCtx(group,career,btn){
+  const tabs=btn.parentElement.querySelectorAll('.ctx-tab');
+  tabs.forEach(t=>{t.className=t.className.replace(/active-\w+/g,'');});
+  btn.classList.add('active-'+career);
+  ['mm','ind','dat','sw','sis'].forEach(c=>{
+    const p=document.getElementById(group+'-'+c);
+    if(p)p.classList.toggle('visible',c===career);
+  });
+}
+
+// ── EXERCISES ──
+function tog(id){
+  const body=document.getElementById(id+'-b');
+  const arr=document.getElementById(id+'-a');
+  const open=body.classList.contains('open');
+  body.classList.toggle('open',!open);
+  if(arr)arr.style.transform=open?'':'rotate(90deg)';
+  if(!open&&window.MathJax)MathJax.typesetPromise([body]);
+}
+
+// ── SIMULATOR ──
+let ch1Inst=null,ch2Inst=null;
+function computeC(A,B,T,q,CF){
+  const intSin2=q/2-(T/(4*Math.PI))*Math.sin(2*Math.PI*q/T);
+  return CF+A*q+B*intSin2;
+}
+function computeCM(A,B,T,q){return A+B*Math.pow(Math.sin(Math.PI*q/T),2);}
+
+function sim(){
+  const A=+document.getElementById('sA').value;
+  const B=+document.getElementById('sB').value;
+  const T=+document.getElementById('sT').value;
+  const Q=+document.getElementById('sQ').value;
+  const CF=+document.getElementById('sCF').value;
+  document.getElementById('vA').textContent=A;
+  document.getElementById('vB').textContent=B;
+  document.getElementById('vT').textContent=T;
+  document.getElementById('vQ').textContent=Q;
+  document.getElementById('vCF').textContent=CF;
+  const tot=computeC(A,B,T,Q,CF);
+  const med=tot/Q;
+  const lp=A+B/2;
+  const cmq=computeCM(A,B,T,Q);
+  document.getElementById('rTotal').textContent=Math.round(tot).toLocaleString();
+  document.getElementById('rMed').textContent=Math.round(med).toLocaleString();
+  document.getElementById('rLP').textContent=Math.round(lp).toLocaleString();
+  document.getElementById('rCMq').textContent=Math.round(cmq).toLocaleString();
+
+  const N=80,labels=[],cmD=[],costD=[],avgD=[],lpD=[];
+  for(let i=0;i<=N;i++){
+    const q=(Q/N)*i;
+    labels.push(Math.round(q));
+    cmD.push(Math.round(computeCM(A,B,T,q)));
+    const c=computeC(A,B,T,q,CF);
+    costD.push(Math.round(c));
+    avgD.push(q>0?Math.round(c/q):null);
+    lpD.push(Math.round(lp));
+  }
+
+  const gc='rgba(99,179,255,0.06)';const tc='#3d5070';
+  const baseOpts={responsive:true,animation:{duration:200},plugins:{legend:{labels:{color:tc,font:{size:11,family:'IBM Plex Mono'}}}},scales:{x:{ticks:{color:tc,maxTicksLimit:8,font:{size:10}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}};
+
+  if(ch1Inst)ch1Inst.destroy();
+  ch1Inst=new Chart(document.getElementById('ch1'),{type:'line',data:{labels,datasets:[
+    {label:'CM(q)',data:cmD,borderColor:'#63b3ff',borderWidth:1.5,pointRadius:0,tension:.4,fill:false},
+    {label:'Costo Total',data:costD,borderColor:'#fbbf24',borderWidth:1.5,pointRadius:0,tension:.4,fill:false,yAxisID:'y1'}
+  ]},options:{...baseOpts,scales:{...baseOpts.scales,y:{...baseOpts.scales.y,title:{display:true,text:'CM',color:tc,font:{size:10}}},y1:{position:'right',ticks:{color:tc,font:{size:10}},grid:{display:false},title:{display:true,text:'C(q)',color:tc,font:{size:10}}}}}});
+
+  if(ch2Inst)ch2Inst.destroy();
+  ch2Inst=new Chart(document.getElementById('ch2'),{type:'line',data:{labels,datasets:[
+    {label:'Costo medio C(q)/q',data:avgD,borderColor:'#2dd4bf',borderWidth:1.5,pointRadius:0,tension:.4,fill:false},
+    {label:'Límite LP (A+B/2)',data:lpD,borderColor:'#f43f5e',borderWidth:1,borderDash:[5,4],pointRadius:0}
+  ]},options:{...baseOpts,scales:{...baseOpts.scales,y:{...baseOpts.scales.y,title:{display:true,text:'C(q)/q',color:tc,font:{size:10}}}}}});
+}
+
+window.addEventListener('load',()=>{
+  sim();
+  if(window.MathJax)MathJax.typesetPromise();
+});
+</script>
+</body>
+</html>
