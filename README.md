@@ -1,0 +1,1 @@
+# Integraci-n-potencias-de-funciones-trigonom-tricas
